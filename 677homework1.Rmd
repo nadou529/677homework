@@ -1,0 +1,77 @@
+---
+title: "Homework"
+output:
+  pdf_document:
+    latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+ap0.6 <- function(m){
+  ##pbinom <= m-1 cumulative probability
+  1 - pbinom(m-1, 100, 0.6)
+}
+## get the value of m
+## type I error : alpha(p)
+for (i in 1:100){
+  if (ap0.6(i) > 0.05){
+    i <- i + 1
+  }
+  else{
+    print(i)
+    break
+  }
+}
+ap0.8 <- function(m){
+  ##pbinom <= m-1 cumulative probability
+  1 - pbinom(m-1, 100, 0.8)
+}
+## Type II error : 1- alpha(p)
+for (k in 1:100){
+  if (1 - ap0.8(k) < 0.05){
+    k <- k + 1
+  }
+  else{
+    print(k)
+    break
+  }
+}
+## ask jiacheng feng for explaination for how to get m value, how to express type I, II probability
+```
+
+```{r}
+## write a function determines the probability of both type1 and type2 error
+ap <- function(n,m,p){
+  ## initialize probability
+  k = 0
+  for (i in m:n){
+    k = k + dbinom(i,n,p)  ## calculate the probability at specific point 
+  }
+  return(k)
+}
+
+```
+
+```{r}
+y1 <- seq(0.4,1,by = 0.01)
+
+x1 <- ap(100,69,y1)
+
+df1 <- data.frame(y1, x1)
+
+ggplot(aes(x = y1, y = x1), data = df1) +
+  geom_line()
+
+x2 <- ap(100,74,y1)
+
+df2 <- data.frame(y1, x2)
+
+ggplot(aes(x = y1, y = x2), data = df2) +
+  geom_line()
+## work with donghao xue for powercurve
+```
+From my understanding, the power function is defined as the probability alpha(p) of making type I error. The probability of making type II error is (1 - alpha(p)). When we set p equal to 0.6, the value of alpha(0.6) is the probability of making type I error. When we set p to other values for example 0.8 in the book, the value of (1 - alpha(p)) is the probability of making type II error. As a result, we set alpha(p) to 0.95 in order to get m value.
